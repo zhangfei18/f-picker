@@ -22,6 +22,7 @@
             <!--  -->
             <div class="column">
               <List
+                v-if="column1.length > 0"
                 :column="column1"
                 :boxHeight="boxHeight"
                 :rowNumber="getRowNumber"
@@ -174,13 +175,13 @@ export default {
     minDate: {
       type: Date,
       default: () => {
-        return new Date();
+        return new Date(new Date().getFullYear() - 10, 0, 1);
       }
     },
     maxDate: {
       type: Date,
       default: () => {
-        return new Date();
+        return new Date(new Date().getFullYear() + 10, 11, 31);
       }
     },
     curDate: {
@@ -244,13 +245,11 @@ export default {
     },
     defaultIndex() {
       this.init();
+    },
+    type(newVal) {
+      this.type = newVal;
+      this.resolveDate();
     }
-    // value(val){
-    //   if(val.valueOf() !== this.innerValue.valueOf()){
-    //     console.log()
-    //     this.innerValue = val;
-    //   }
-    // }
   },
   created() {
     Date.prototype._clone = function _clone() {
@@ -263,7 +262,6 @@ export default {
     ) {
       // 初始化 innerValue
       this.innerValue = this.curDate._clone();
-      console.log(this.innerValue, "innerValue--1111-");
       this.resolveDate();
       return;
     }
@@ -293,6 +291,7 @@ export default {
       ];
       this.formateData();
     },
+    // 当前日期的边界值
     ranges() {
       // 监视innerValue,只要innerValue更新就会重新求一次边界值
       let { minYear, minMonth, minDate, minHour, minMinute } = this.getBoundary(
@@ -303,11 +302,7 @@ export default {
         "max",
         this.innerValue
       );
-      // let yearRange = [minYear, maxYear];
-      // let monthRange = [minMonth, maxMonth]
-      // let dateRange = [minDate, maxDate]
-      // let hourRange = [minHour,maxHour];
-      // let minuteRange = [minMinute, maxMinute];
+
       let result = [
         {
           type: "year",
@@ -330,15 +325,6 @@ export default {
           range: [minMinute, maxMinute]
         }
       ];
-      console.log(result, "ranges");
-      console.log(
-        [minYear, maxYear],
-        [minMonth, maxMonth],
-        [minDate, maxDate],
-        [minHour, maxHour],
-        [minMinute, maxMinute],
-        "min-max"
-      );
 
       if (this.type === "date-picker") {
         result.splice(3, 2);
@@ -352,45 +338,54 @@ export default {
     resolveDate() {
       this.$nextTick(() => {
         let result = this.ranges(); //获取到边界值
+        this.clearColumn();
+
         result.forEach((item, index) => {
           let { type, range } = item;
           for (let i = range[0] - 1; i < range[1]; i++) {
             this[`column${index + 1}`].push({ label: padZero(range[0]++, 2) });
           }
         });
+
+        this.comActiveIndex();
       });
       // 计算默认选中值
-      this.comActiveIndex();
+    },
+    clearColumn() {
+      for (let index = 0; index < 5; index++) {
+        this[`column${index + 1}`] = [];
+      }
     },
     //实时调取的方法： 计算默认的index, 默认是curDate
     comActiveIndex() {
-      let result = [];
-      console.log(this.innerValue, "innerValue---");
+      let result = []; //存放激活项的值
+      this.result = []; //存放用户选择的结果
+      // console.log(this.innerValue, "innerValue---");
       result.push(padZero(this.innerValue.getFullYear(), 2));
+      this.result.push(padZero(this.innerValue.getFullYear(), 2));
       result.push(padZero(this.innerValue.getMonth() + 1, 2));
+      this.result.push(padZero(this.innerValue.getMonth() + 1, 2));
       result.push(padZero(this.innerValue.getDate(), 2));
+      this.result.push(padZero(this.innerValue.getDate(), 2));
       result.push(padZero(this.innerValue.getHours(), 2));
+      this.result.push(padZero(this.innerValue.getHours(), 2));
       result.push(padZero(this.innerValue.getMinutes(), 2));
-      this.$nextTick(() => {
-        if (this.type === "date-picker") result.splice(3, 2);
-        if (this.type === "time-picker") result.splice(0, 3);
-        result.forEach((item1, index1) => {
-          let index = (this[`column${index1 + 1}`].findIndex(
-            (item2, index2) => {
-              return item2.label == item1;
-            }
-          ));
-          index = index  <0 ? 0 : index;
-          console.log(index, 'active-index');
-
-          this[`dIndex${index1 + 1}`] = index;
+      this.result.push(padZero(this.innerValue.getMinutes(), 2));
+      // this.$nextTick(() => {
+      if (this.type === "date-picker") result.splice(3, 2);
+      if (this.type === "time-picker") result.splice(0, 3);
+      result.forEach((item1, index1) => {
+        let index = this[`column${index1 + 1}`].findIndex((item2, index2) => {
+          return item2.label == item1;
         });
+        index = index < 0 ? 0 : index;
+        this[`dIndex${index1 + 1}`] = index;
       });
+      // });
     },
     // 求出最大/最小值
     getBoundary(type, value) {
       const boundary = this[`${type}Date`]; //边界值
-      console.log(boundary.toLocaleString(), "value.getFullYear");
       const year = boundary.getFullYear(); //边界值得年份
       let mounth = 1;
       let date = 1;
@@ -405,7 +400,7 @@ export default {
       // 说明求得是用户输入的边界值
       if (year === value.getFullYear()) {
         // 如果value的年份和边界值的年份相同，那么value的mounth只能和边界值的mounth为边界，以此类推...
-        mounth = boundary.getMonth();
+        mounth = boundary.getMonth() + 1;
         console.log(mounth, "mounth");
         if (mounth === value.getMonth() + 1) {
           date = boundary.getDate();
@@ -417,7 +412,6 @@ export default {
           }
         }
       }
-
       let res = {
         [`${type}Year`]: year,
         [`${type}Month`]: mounth,
@@ -425,7 +419,6 @@ export default {
         [`${type}Hour`]: hour,
         [`${type}Minute`]: minutes
       };
-      console.log(res, "getBoundary");
       return res;
     },
 
@@ -439,17 +432,13 @@ export default {
       arr.push(time.getMinutes());
       return arr;
     },
-
-    // 求出嵌套关系的时间格式
-    nestingDate() {},
-    resolveCurDate(curDate) {},
-    resolveMinDate(minDate) {},
-    resolveMaxDate(maxDate) {},
     // 格式化column中的数据
     formateData() {
+      // 联动
       if (this.layer > 1) {
         this.setLinkColumn();
       } else {
+        //普通选择
         this.column1 = this.pickData[0] || [];
         this.column2 = this.pickData[1] || [];
         this.column3 = this.pickData[2] || [];
@@ -497,7 +486,7 @@ export default {
       const { defaultIndex } = this;
 
       this.column1 = this.pickData || [];
-      if (typeof defaultIndex == "number") {
+      if (typeof defaultIndex === "number") {
         this.dIndex1 = defaultIndex;
         this.dIndex2 = 0;
         if (this.column1.length > 1 && this.column1[0].children) {
@@ -507,6 +496,7 @@ export default {
         this.dIndex1 = defaultIndex[0] || 0;
         this.column2 = this.column1[this.dIndex1].children || [];
         // this.$nextTick(() => {
+        // 设置dINndex
         if (this.column2.length - 1 < defaultIndex[1]) {
           this.dIndex2 = this.column2.length - 1;
         } else {
@@ -566,14 +556,19 @@ export default {
         if (this.type == "all-picker" || this.type == "date-picker") {
           this.value = this.innerValue._clone();
           this.value.setYear(Number(val.label));
-          // console.log(value.toLocaleString(), this.innerValue.toLocaleString());
           if (this.value.valueOf() !== this.innerValue.valueOf()) {
             this.innerValue = this.value;
             this.setColumnValue(0);
+            this.change(0, val.label);
           }
           return;
         }
+        if (this.type === "time-picker") {
+          this.change(3, val.label);
+          return;
+        }
         this.change(0, val);
+        // 联动调用
         if (this.layer > 1) {
           this.dIndex2 = 0; //让column2List组件watch生效，进而更新后面的List列中的数据
           this.changLink("column2", val);
@@ -589,7 +584,12 @@ export default {
           if (this.value.valueOf() !== this.innerValue.valueOf()) {
             this.innerValue = this.value;
             this.setColumnValue(1);
+            this.change(1, val.label);
           }
+          return;
+        }
+        if (this.type === "time-picker") {
+          this.change(4, val.label);
           return;
         }
         this.change(1, val);
@@ -603,10 +603,12 @@ export default {
       console.log("change3", val);
 
       if (val) {
+        // 时间拾取器
         if (this.type == "all-picker" || this.type == "date-picker") {
           this.value = this.innerValue._clone();
           this.value.setDate(Number(val.label));
-           this.innerValue = this.value;
+          this.innerValue = this.value;
+          this.change(2, val.label);
           return;
         }
         this.change(2, val);
@@ -619,31 +621,38 @@ export default {
     change4(val) {
       console.log("change4", val);
       if (val) {
+        // 时间拾取器
         if (this.type == "all-picker" || this.type == "date-picker") {
           this.value = this.innerValue._clone();
           this.value.setHours(Number(val.label));
-           this.innerValue = this.value;
+          this.innerValue = this.value;
+          this.change(3, val.label);
           return;
         }
         this.change(3, val);
       }
     },
+    // 普通选择器最多只有四列，时间选择器最多有五列
     change5(val) {
-       console.log("change5", val);
+      console.log("change5", val);
       if (val) {
+        // 时间拾取器
         if (this.type == "all-picker" || this.type == "date-picker") {
           this.value = this.innerValue._clone();
           this.value.setMinutes(Number(val.label));
-           this.innerValue = this.value;
+          this.innerValue = this.value;
+          this.change(4, val.label);
           return;
         }
         this.change(4, val);
       }
     },
     change(index, res) {
+      // this.result为存储结果的用户选择结果的数组
       this.result[index] = res;
       this.$emit("change", this.result);
     },
+    // 联动时修改数据
     changLink(key, res) {
       if (this.layer) {
         let linkTimer = setTimeout(() => {
@@ -652,12 +661,19 @@ export default {
       }
     },
     confirm(res) {
-      this.$emit("confirm", this.result);
-      this.$emit("update:visible", false);
-      return res.result;
+      let result = this.result.slice(0); //长度是5
+      if (this.type === "date-picker") {
+        this.$emit("confirm", result.splice(3, 2));
+      } else if (this.type === "time-picker") {
+        this.$emit("confirm", result.splice(0, 3));
+      } else {
+        this.$emit("confirm", result);
+      }
+      // this.$emit("update:visible", false);
+      // return res.result;
     },
     cancel(res) {
-      this.$emit("cancel", this.result);
+      // this.$emit("cancel", this.result);
       this.$emit("update:visible", false);
     },
     clickMask() {
@@ -669,12 +685,21 @@ export default {
     },
     // 供外部调用的可获取’已选值‘
     getSelVal() {
-      return this.result;
+      // this.$nextTick(() => {
+      let result = this.result.slice(0); //长度是5
+        if (this.type === "date-picker") {
+          return result.splice(3, 2);
+        } else if (this.type === "time-picker") {
+          return result.splice(0, 3);
+        } else {
+          return this.result;
+        }
+      // });
     },
+    //  设置每列的数据
     setColumnValue(start) {
       let result = this.ranges();
-      result = result.slice(start,3);
-      console.log(result, "setColumnValue");
+      result = result.slice(start, 3);
       result.forEach((item, index) => {
         start += 1;
         let { type, range } = item;
@@ -685,10 +710,9 @@ export default {
             label: start > 1 ? padZero(range[0] + i, 2) : range[0] + i
           });
         }
-        console.log(this[`column${start}`], `column${start}`);
-
-        this.comActiveIndex();
       });
+      // 重新计算激活项的index-即dIndex;
+      this.comActiveIndex();
     },
     fixedBody() {},
     looseBody() {}

@@ -1,8 +1,32 @@
 <template>
   <div class="home">
-    <button @click="show">打开picker</button>
+    <div class="switchWrap">
+      <fSwitch
+        v-model="switchValue1"
+        :switchW="48"
+        :switchH="28"
+        bgColor="#a12344"
+      ></fSwitch>
+      <span style="color:#a12344">all-picker</span>
+      <fSwitch
+        v-model="switchValue2"
+        :switchW="48"
+        :switchH="28"
+        bgColor="#f90"
+      ></fSwitch>
+      <span style="color:#f90">date-picker</span>
+      <fSwitch
+        v-model="switchValue3"
+        :switchW="48"
+        :switchH="28"
+        bgColor="#4063d5"
+      ></fSwitch>
+      <span style="color:#4063d5 ">time-picker</span>
+    </div>
 
-    <picker
+    <button @click="show">{{ dateType }}</button>
+
+    <Picker
       ref="picker"
       :visible.sync="visiblePicker"
       :showHeadBar="showHeadBar"
@@ -15,31 +39,18 @@
       headerTxtColor="red"
       :maskClick="maskClosable"
       :appendToBody="true"
-      type="all-picker"
-      :minDate="minDate"
-      :maxDate="maxDate"
-      :curDate="curDate"
+      :type="dateType"
       @change="change"
       @confirm="confirm"
       @cancel="cancel"
     >
-      <!-- <template v-slot:header>
-        <div class="header">
-          <div class="left" @click="cancel">
-            取消
-          </div>
-          <div class="right" @click="confirm">
-            确认
-          </div>
-        </div>
-      </template> -->
-    </picker>
+    </Picker>
   </div>
 </template>
 
 <script>
-import picker from "../components/picker/index.vue";
-
+import Picker from "../components/picker/index.vue";
+import fSwitch from "../components/switch/index.vue";
 let pData = [
   {
     label: "深圳",
@@ -639,6 +650,10 @@ export default {
   name: "Home",
   data() {
     return {
+      switchValue1: false,
+      switchValue2: false,
+      switchValue3: false,
+      dateType: "all-picker",
       visiblePicker: false,
       showHeadBar: true,
       pickData: pData,
@@ -647,15 +662,41 @@ export default {
       zIndex: 1000,
       minDate: new Date(2018, 8, 8, 8, 8),
       maxDate: new Date(2028, 8, 8, 8, 8),
-      curDate: new Date(),
-      alias: {
-        label: "name",
-        value: "id"
-      }
+      curDate: new Date()
     };
   },
   components: {
-    picker
+    Picker,
+    fSwitch
+  },
+  watch: {
+    switchValue1(newVal) {
+      console.log("switch1开关：", newVal);
+      if (newVal) {
+        this.switchValue2 = false;
+        this.switchValue3 = false;
+        this.dateType = "all-picker";
+      }
+      console.log(this.dateType);
+    },
+    switchValue2(newVal) {
+      console.log("switch2开关：", newVal);
+      if (newVal) {
+        this.switchValue1 = false;
+        this.switchValue3 = false;
+        this.dateType = "date-picker";
+      }
+      console.log(this.dateType);
+    },
+    switchValue3(newVal) {
+      console.log("switch3开关：", newVal);
+      if (newVal) {
+        this.switchValue1 = false;
+        this.switchValue2 = false;
+        this.dateType = "time-picker";
+      }
+      console.log(this.dateType);
+    }
   },
   mounted() {
     // setInterval(()=>{
@@ -683,10 +724,15 @@ export default {
 <style lang="less" scoped>
 .home {
   width: 100%;
-  height: 200vh;
+  height: 100vh;
+  .switchWrap {
+    width: 100%;
+    display: flex;
+  }
   button {
     position: relative;
-    // top: 800px;/
+    margin-top: 50px;
+    // margin:0 auto;
   }
   .header {
     width: 200px;

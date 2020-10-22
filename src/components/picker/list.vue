@@ -18,7 +18,7 @@ export default {
   props: {
     column: {
       type: Array,
-      default: () => {}
+      default: () => []
     },
     boxHeight: {
       type: Number,
@@ -177,7 +177,6 @@ export default {
     },
     // 根据index设置偏移的头部
     setTop(index = 0, isManual = false) {
-      // console.log(this.selectIndex, index);
       const { boxHeight, itemHeight } = this;
       // index = 0 时的偏移距离
       const firstTop = (boxHeight - itemHeight) / 2;
@@ -190,12 +189,9 @@ export default {
       this.liScale(index);
     },
     liScale(index) {
-      // console.log(this.$refs['ul'].children[index] instanceof Array, '孩子们')
-      // this.$refs['ul'].children
       for (let i = 0; i < this.$refs["ul"].children.length; i++) {
         if (i !== index) {
           this.$refs["ul"].children[i].classList.remove("bool");
-          // console.log(this.$refs['ul'].children[i].classList,'类')
         } else {
           this.$refs["ul"].children[i].classList.add("bool");
         }
@@ -224,6 +220,7 @@ export default {
     transition-timing-function: cubic-bezier(0.23, 1, 0.68, 1);
     line-height: 44px;
     li {
+      font-family: PingFangSC;
       margin: 0;
       padding: 0;
       width: 100%;
