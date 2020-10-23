@@ -45,12 +45,14 @@
       @cancel="cancel"
     >
     </Picker>
+    <f-dialog :dialogVisible="dialogVisible" :text="dialogText" @maskClose="maskClose"></f-dialog>
   </div>
 </template>
 
 <script>
 import Picker from "../components/picker/index.vue";
 import fSwitch from "../components/switch/index.vue";
+import fDialog from "../components/dialog/index.vue"
 let pData = [
   {
     label: "深圳",
@@ -650,6 +652,8 @@ export default {
   name: "Home",
   data() {
     return {
+      dialogVisible: false,
+      dialogText: '',
       switchValue1: false,
       switchValue2: false,
       switchValue3: false,
@@ -667,7 +671,8 @@ export default {
   },
   components: {
     Picker,
-    fSwitch
+    fSwitch,
+    fDialog
   },
   watch: {
     switchValue1(newVal) {
@@ -712,11 +717,16 @@ export default {
     },
     confirm(res) {
       this.visiblePicker = false;
+      this.dialogVisible = true;
       res = this.$refs["picker"].getSelVal();
+      this.dialogText = res.join('-')
       console.log("确认", res);
     },
     cancel(res) {
       console.log("取消", res);
+    },
+    maskClose(val){
+      this.dialogVisible = val;
     }
   }
 };
