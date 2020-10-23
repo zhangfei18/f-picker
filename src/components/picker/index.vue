@@ -688,9 +688,9 @@ export default {
       // this.$nextTick(() => {
       let result = this.result.slice(0); //长度是5
         if (this.type === "date-picker") {
-          return result.splice(3, 2);
+          return result.slice(0, 3);
         } else if (this.type === "time-picker") {
-          return result.splice(0, 3);
+          return result.splice(3);
         } else {
           return this.result;
         }
