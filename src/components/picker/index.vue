@@ -16,7 +16,6 @@
             >
             </Header>
           </slot>
-
           <!-- 主选择区域 -->
           <div class="content" :style="{ height: boxHeight + 'px' }">
             <!--  -->
