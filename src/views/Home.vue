@@ -7,26 +7,26 @@
         :switchH="28"
         bgColor="#a12344"
       ></fSwitch>
-      <span style="color:#a12344">all-picker</span>
+      <span style="color: #a12344">all-picker</span>
       <fSwitch
         v-model="switchValue2"
         :switchW="48"
         :switchH="28"
         bgColor="#f90"
       ></fSwitch>
-      <span style="color:#f90">date-picker</span>
+      <span style="color: #f90">date-picker</span>
       <fSwitch
         v-model="switchValue3"
         :switchW="48"
         :switchH="28"
         bgColor="#4063d5"
       ></fSwitch>
-      <span style="color:#4063d5 ">time-picker</span>
+      <span style="color: #4063d5">time-picker</span>
     </div>
 
     <button @click="show">{{ dateType }}</button>
-
-    <Picker
+    <!-- 初代时间选择器 -->
+    <!-- <Picker
       ref="picker"
       :visible.sync="visiblePicker"
       :showHeadBar="showHeadBar"
@@ -44,15 +44,29 @@
       @confirm="confirm"
       @cancel="cancel"
     >
-    </Picker>
-    <f-dialog :dialogVisible="dialogVisible" :text="dialogText" @maskClose="maskClose"></f-dialog>
+    </Picker> -->
+    <!-- 双选时间选择器 -->
+    <Picker
+      :visible.sync="visiblePicker"
+      confirmTxt="确认"
+      cancelTxt="取消"
+      headerTxt="哈哈哈"
+      @closeClick="closeClick"
+      @confirmClick="confirmClick"
+      @cancelClick="cancelClick"
+    ></Picker>
+    <f-dialog
+      :dialogVisible="dialogVisible"
+      :text="dialogText"
+      @maskClose="maskClose"
+    ></f-dialog>
   </div>
 </template>
 
 <script>
-import Picker from "../components/picker/index.vue";
+import Picker from "../components/double-time-picker/index";
 import fSwitch from "../components/switch/index.vue";
-import fDialog from "../components/dialog/index.vue"
+import fDialog from "../components/dialog/index.vue";
 let pData = [
   {
     label: "深圳",
@@ -64,25 +78,25 @@ let pData = [
         children: [
           {
             label: "四海公园",
-            value: "shgy"
+            value: "shgy",
           },
           {
             label: "中山公园",
-            value: "zsgy"
+            value: "zsgy",
           },
           {
             label: "荔香公园",
-            value: "lxgy"
+            value: "lxgy",
           },
           {
             label: "大南山公园",
-            value: "dngy"
+            value: "dngy",
           },
           {
             label: "深圳湾公园",
-            value: "shwgy"
-          }
-        ]
+            value: "shwgy",
+          },
+        ],
       },
       {
         label: "福田",
@@ -90,37 +104,37 @@ let pData = [
         children: [
           {
             label: "中心公园",
-            value: "zxgy"
+            value: "zxgy",
           },
           {
             label: "荔枝公园",
-            value: "lzgy"
+            value: "lzgy",
           },
           {
             label: "莲花山公园",
-            value: "lhgy"
+            value: "lhgy",
           },
           {
             label: "笔架山公园",
-            value: "bjsgy"
+            value: "bjsgy",
           },
           {
             label: "梅林公园",
-            value: "mlgy"
+            value: "mlgy",
           },
           {
             label: "皇岗公园",
-            value: "wggy"
+            value: "wggy",
           },
           {
             label: "红树林公园",
-            value: "hslgy"
+            value: "hslgy",
           },
           {
             label: "园博园",
-            value: "ybygy"
-          }
-        ]
+            value: "ybygy",
+          },
+        ],
       },
       {
         label: "宝安",
@@ -128,25 +142,25 @@ let pData = [
         children: [
           {
             label: "凤凰山公园",
-            value: "fhsgy"
+            value: "fhsgy",
           },
           {
             label: "凤岩古庙",
-            value: "fygm"
+            value: "fygm",
           },
           {
             label: "凤凰禅寺",
-            value: "fhcs"
+            value: "fhcs",
           },
           {
             label: "文公祠",
-            value: "wgc"
+            value: "wgc",
           },
           {
             label: "文昌塔",
-            value: "wct"
-          }
-        ]
+            value: "wct",
+          },
+        ],
       },
       {
         label: "罗湖",
@@ -154,25 +168,25 @@ let pData = [
         children: [
           {
             label: "地王大厦",
-            value: "dwds"
+            value: "dwds",
           },
           {
             label: "梧桐山",
-            value: "wgs"
+            value: "wgs",
           },
           {
             label: "洪湖公园",
-            value: "hhgy"
+            value: "hhgy",
           },
           {
             label: "弘法寺",
-            value: "hfs"
+            value: "hfs",
           },
           {
             label: "荔枝公园",
-            value: "lzgy"
-          }
-        ]
+            value: "lzgy",
+          },
+        ],
       },
       {
         label: "盐田",
@@ -180,27 +194,27 @@ let pData = [
         children: [
           {
             label: "沙头角",
-            value: "stj"
+            value: "stj",
           },
           {
             label: "海山",
-            value: "hs"
+            value: "hs",
           },
           {
             label: "盐田田",
-            value: "ytt"
+            value: "ytt",
           },
           {
             label: "梅沙",
-            value: "ms"
+            value: "ms",
           },
           {
             label: "荔枝公园",
-            value: "lzgy"
-          }
-        ]
-      }
-    ]
+            value: "lzgy",
+          },
+        ],
+      },
+    ],
   },
   {
     label: "广州",
@@ -212,25 +226,25 @@ let pData = [
         children: [
           {
             label: "五羊石像",
-            value: "wysx"
+            value: "wysx",
           },
           {
             label: "镇海楼",
-            value: "zhl"
+            value: "zhl",
           },
           {
             label: "千年古道",
-            value: "qngd"
+            value: "qngd",
           },
           {
             label: "北京路",
-            value: "bjl"
+            value: "bjl",
           },
           {
             label: "中山纪念堂",
-            value: "zsjng"
-          }
-        ]
+            value: "zsjng",
+          },
+        ],
       },
       {
         label: "荔湾",
@@ -238,29 +252,29 @@ let pData = [
         children: [
           {
             label: "荔枝湾",
-            value: "lzw"
+            value: "lzw",
           },
           {
             label: "上下九步行街",
-            value: "sxjbxj"
+            value: "sxjbxj",
           },
           {
             label: "沙面岛",
-            value: "smd"
+            value: "smd",
           },
           {
             label: "陈家祠",
-            value: "cjc"
+            value: "cjc",
           },
           {
             label: "西关大屋",
-            value: "xgdw"
+            value: "xgdw",
           },
           {
             label: "华林寺",
-            value: "hls"
-          }
-        ]
+            value: "hls",
+          },
+        ],
       },
       {
         label: "海珠",
@@ -268,25 +282,25 @@ let pData = [
         children: [
           {
             label: "海珠湖",
-            value: "lzw"
+            value: "lzw",
           },
           {
             label: "邓世昌纪念馆",
-            value: "sxjbxj"
+            value: "sxjbxj",
           },
           {
             label: "纯阳观",
-            value: "smd"
+            value: "smd",
           },
           {
             label: "海珠湿地",
-            value: "cjc"
+            value: "cjc",
           },
           {
             label: "双塔辉映",
-            value: "xgdw"
-          }
-        ]
+            value: "xgdw",
+          },
+        ],
       },
       {
         label: "天河",
@@ -294,21 +308,21 @@ let pData = [
         children: [
           {
             label: "花城广场",
-            value: "hcgc"
+            value: "hcgc",
           },
           {
             label: "海心沙",
-            value: "hxc"
+            value: "hxc",
           },
           {
             label: "天河体育中心",
-            value: "thtyzx"
+            value: "thtyzx",
           },
           {
             label: "华南植物园",
-            value: "hnzwy"
-          }
-        ]
+            value: "hnzwy",
+          },
+        ],
       },
       {
         label: "白云",
@@ -316,27 +330,27 @@ let pData = [
         children: [
           {
             label: "白云山",
-            value: "byc"
+            value: "byc",
           },
           {
             label: "云台花园",
-            value: "ythy"
+            value: "ythy",
           },
           {
             label: "广州体育馆",
-            value: "gztyg"
+            value: "gztyg",
           },
           {
             label: "三元里",
-            value: "syl"
+            value: "syl",
           },
           {
             label: "帽峰山",
-            value: "mfs"
-          }
-        ]
-      }
-    ]
+            value: "mfs",
+          },
+        ],
+      },
+    ],
   },
   {
     label: "上海",
@@ -348,25 +362,25 @@ let pData = [
         children: [
           {
             label: "外滩",
-            value: "wt"
+            value: "wt",
           },
           {
             label: "新天地",
-            value: "xtd"
+            value: "xtd",
           },
           {
             label: "南京东路",
-            value: "njdl"
+            value: "njdl",
           },
           {
             label: "淮海中路",
-            value: "hhzl"
+            value: "hhzl",
           },
           {
             label: "豫园",
-            value: "yy"
-          }
-        ]
+            value: "yy",
+          },
+        ],
       },
       {
         label: "徐汇",
@@ -374,21 +388,21 @@ let pData = [
         children: [
           {
             label: "上海植物园",
-            value: "shzwy"
+            value: "shzwy",
           },
           {
             label: "桂林公园",
-            value: "glgy"
+            value: "glgy",
           },
           {
             label: "龙华寺",
-            value: "lhs"
+            value: "lhs",
           },
           {
             label: "徐光启墓",
-            value: "xgqm"
-          }
-        ]
+            value: "xgqm",
+          },
+        ],
       },
       {
         label: "长宁",
@@ -396,21 +410,21 @@ let pData = [
         children: [
           {
             label: "宋庆龄陵园",
-            value: "sqly"
+            value: "sqly",
           },
           {
             label: "刘海粟美术馆",
-            value: "lhlmsg"
+            value: "lhlmsg",
           },
           {
             label: "上海动物园",
-            value: "shdwg"
+            value: "shdwg",
           },
           {
             label: "国际展览中心",
-            value: "gjzlzx"
-          }
-        ]
+            value: "gjzlzx",
+          },
+        ],
       },
       {
         label: "虹口",
@@ -418,19 +432,19 @@ let pData = [
         children: [
           {
             label: "鲁迅公园",
-            value: "lxgy"
+            value: "lxgy",
           },
           {
             label: "上海大厦",
-            value: "lsds"
+            value: "lsds",
           },
           {
             label: "梅园",
-            value: "my"
-          }
-        ]
-      }
-    ]
+            value: "my",
+          },
+        ],
+      },
+    ],
   },
   {
     label: "北京",
@@ -442,21 +456,21 @@ let pData = [
         children: [
           {
             label: "景山前街",
-            value: "jsqj"
+            value: "jsqj",
           },
           {
             label: "五四大街",
-            value: "wsdj"
+            value: "wsdj",
           },
           {
             label: "南池子",
-            value: "ncz"
+            value: "ncz",
           },
           {
             label: "雍和宫",
-            value: "rhg"
-          }
-        ]
+            value: "rhg",
+          },
+        ],
       },
       {
         label: "西城",
@@ -464,21 +478,21 @@ let pData = [
         children: [
           {
             label: "醇王府",
-            value: "chf"
+            value: "chf",
           },
           {
             label: "齐白石故居",
-            value: "qbsgj"
+            value: "qbsgj",
           },
           {
             label: "梅兰芳故居",
-            value: "mlfgj"
+            value: "mlfgj",
           },
           {
             label: "郭沫若故居",
-            value: "gmrgj"
-          }
-        ]
+            value: "gmrgj",
+          },
+        ],
       },
       {
         label: "海淀",
@@ -486,25 +500,25 @@ let pData = [
         children: [
           {
             label: "颐和园",
-            value: "yhy"
+            value: "yhy",
           },
           {
             label: "圆明园遗址",
-            value: "ymyyz"
+            value: "ymyyz",
           },
           {
             label: "香山公园",
-            value: "xsgy"
+            value: "xsgy",
           },
           {
             label: "玉泉山",
-            value: "yqs"
+            value: "yqs",
           },
           {
             label: "大钟寺",
-            value: "dzs"
-          }
-        ]
+            value: "dzs",
+          },
+        ],
       },
       {
         label: "朝阳",
@@ -512,21 +526,21 @@ let pData = [
         children: [
           {
             label: "朝阳-1",
-            value: "1"
+            value: "1",
           },
           {
             label: "朝阳-2",
-            value: "2"
+            value: "2",
           },
           {
             label: "朝阳-3",
-            value: "3"
+            value: "3",
           },
           {
             label: "朝阳-4",
-            value: "4"
-          }
-        ]
+            value: "4",
+          },
+        ],
       },
       {
         label: "丰台",
@@ -534,21 +548,21 @@ let pData = [
         children: [
           {
             label: "丰台-1",
-            value: "1"
+            value: "1",
           },
           {
             label: "丰台-2",
-            value: "2"
+            value: "2",
           },
           {
             label: "丰台-3",
-            value: "3"
+            value: "3",
           },
           {
             label: "丰台-4",
-            value: "4"
-          }
-        ]
+            value: "4",
+          },
+        ],
       },
       {
         label: "门头沟",
@@ -556,21 +570,21 @@ let pData = [
         children: [
           {
             label: "门头沟-1",
-            value: "1"
+            value: "1",
           },
           {
             label: "门头沟-2",
-            value: "2"
+            value: "2",
           },
           {
             label: "门头沟-3",
-            value: "3"
+            value: "3",
           },
           {
             label: "门头沟-4",
-            value: "4"
-          }
-        ]
+            value: "4",
+          },
+        ],
       },
       {
         label: "昌平",
@@ -578,21 +592,21 @@ let pData = [
         children: [
           {
             label: "昌平-1",
-            value: "1"
+            value: "1",
           },
           {
             label: "昌平-2",
-            value: "2"
+            value: "2",
           },
           {
             label: "昌平-3",
-            value: "3"
+            value: "3",
           },
           {
             label: "昌平-4",
-            value: "4"
-          }
-        ]
+            value: "4",
+          },
+        ],
       },
       {
         label: "大兴",
@@ -600,21 +614,21 @@ let pData = [
         children: [
           {
             label: "大兴-1",
-            value: "1"
+            value: "1",
           },
           {
             label: "大兴-2",
-            value: "2"
+            value: "2",
           },
           {
             label: "大兴-3",
-            value: "3"
+            value: "3",
           },
           {
             label: "大兴-4",
-            value: "4"
-          }
-        ]
+            value: "4",
+          },
+        ],
       },
       {
         label: "顺义",
@@ -622,24 +636,24 @@ let pData = [
         children: [
           {
             label: "顺义-1",
-            value: "1"
+            value: "1",
           },
           {
             label: "顺义-2",
-            value: "2"
+            value: "2",
           },
           {
             label: "顺义-3",
-            value: "3"
+            value: "3",
           },
           {
             label: "顺义-4",
-            value: "4"
-          }
-        ]
-      }
-    ]
-  }
+            value: "4",
+          },
+        ],
+      },
+    ],
+  },
 ];
 // let pData = [];
 // for (let i = 0; i < 15; i++) {
@@ -653,7 +667,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
-      dialogText: '',
+      dialogText: "",
       switchValue1: false,
       switchValue2: false,
       switchValue3: false,
@@ -666,13 +680,15 @@ export default {
       zIndex: 1000,
       minDate: new Date(2018, 8, 8, 8, 8),
       maxDate: new Date(2028, 8, 8, 8, 8),
-      curDate: new Date()
+      curDate: new Date(),
+      // 双选
+      visible:false
     };
   },
   components: {
     Picker,
     fSwitch,
-    fDialog
+    fDialog,
   },
   watch: {
     switchValue1(newVal) {
@@ -701,7 +717,7 @@ export default {
         this.dateType = "time-picker";
       }
       console.log(this.dateType);
-    }
+    },
   },
   mounted() {
     // setInterval(()=>{
@@ -719,16 +735,16 @@ export default {
       this.visiblePicker = false;
       this.dialogVisible = true;
       res = this.$refs["picker"].getSelVal();
-      this.dialogText = res.join('-')
+      this.dialogText = res.join("-");
       console.log("确认", res);
     },
     cancel(res) {
       console.log("取消", res);
     },
-    maskClose(val){
+    maskClose(val) {
       this.dialogVisible = val;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="less" scoped>
